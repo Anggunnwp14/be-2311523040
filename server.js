@@ -37,7 +37,7 @@ app.get('/health', async (req, res) => {
             database: "connected",
             student: {
                 name: "Anggun Weldiana Putri",
-                nim: "2311522040"
+                nim: "2311523040" // Sesuai NIM Asli
             }
         });
     } catch (error) {
@@ -47,7 +47,7 @@ app.get('/health', async (req, res) => {
             database: "disconnected",
             student: {
                 name: "Anggun Weldiana Putri",
-                nim: "2311520340"
+                nim: "2311523040" // Sesuai NIM Asli
             }
         });
     }
@@ -86,9 +86,7 @@ app.get('/schema', (req, res) => {
 app.get('/items', async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM books');
-
         console.log("DATA DARI DATABASE:", rows);
-
         res.status(200).json({
             status: "success",
             message: "Data retrieved successfully",
@@ -165,8 +163,8 @@ app.delete('/items/:id', async (req, res) => {
     }
 });
 
-// Menjalankan Server (Menggunakan PORT dari file konfig.env atau default 5000)
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+// Menjalankan Server dengan Port dinamis untuk GCP Cloud Run serta binding ke 0.0.0.0
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
 });
