@@ -37,7 +37,7 @@ app.get('/health', async (req, res) => {
             database: "connected",
             student: {
                 name: "Anggun Weldiana Putri",
-                nim: "2311523040" // Sesuai NIM Asli
+                nim: "2311523040" 
             }
         });
     } catch (error) {
@@ -47,7 +47,7 @@ app.get('/health', async (req, res) => {
             database: "disconnected",
             student: {
                 name: "Anggun Weldiana Putri",
-                nim: "2311523040" // Sesuai NIM Asli
+                nim: "2311523040"
             }
         });
     }
@@ -61,16 +61,15 @@ app.get('/schema', (req, res) => {
             nim: "2311523040" 
         },
         resource: {
-            name: "books",
-            label: "Data Buku",
-            description: "Aplikasi untuk mengelola data buku"
+            name: "cameras",
+            label: "Data Kamera",
+            description: "Aplikasi untuk mengelola data kamera"
         },
         fields: [
-            { name: "title", label: "Judul Buku", type: "text", required: true, showInTable: true },
-            { name: "author", label: "Penulis", type: "text", required: true, showInTable: true },
-            { name: "year", label: "Tahun Terbit", type: "number", required: false, showInTable: true },
-            { name: "category", label: "Kategori", type: "select", options: ["Fiksi", "Non-Fiksi", "Teknologi", "Sejarah"], required: true, showInTable: true },
-            { name: "description", label: "Deskripsi", type: "textarea", required: false, showInTable: false }
+            { name: "brand", label: "Brand Kamera", type: "text", required: true, showInTable: true },
+            { name: "model", label: "Model / Seri", type: "text", required: true, showInTable: true },
+            { name: "megapixel", label: "Resolusi (MP)", type: "number", required: true, showInTable: true },
+            { name: "price", label: "Harga", type: "number", required: true, showInTable: true }
         ],
         endpoints: {
             list: "/items",
@@ -82,10 +81,10 @@ app.get('/schema', (req, res) => {
     });
 });
 
-// 3. CRUD: GET ALL ITEMS (Mengambil semua data buku dari MariaDB)
+// 3. CRUD: GET ALL ITEMS (Mengambil semua data kamera dari MariaDB)
 app.get('/items', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM books');
+        const [rows] = await pool.query('SELECT * FROM cameras');
         console.log("DATA DARI DATABASE:", rows);
         res.status(200).json({
             status: "success",
@@ -100,7 +99,7 @@ app.get('/items', async (req, res) => {
 // 4. CRUD: GET ITEM BY ID (Melihat detail satu data berdasarkan ID)
 app.get('/items/:id', async (req, res) => {
     try {
-        const [rows] = await pool.query('SELECT * FROM books WHERE id = ?', [req.params.id]);
+        const [rows] = await pool.query('SELECT * FROM cameras WHERE id = ?', [req.params.id]);
         if (rows.length === 0) return res.status(404).json({ status: "error", message: "Item not found" });
         
         res.status(200).json({
@@ -113,47 +112,47 @@ app.get('/items/:id', async (req, res) => {
     }
 });
 
-// 5. CRUD: POST CREATE ITEM (Menambahkan data buku baru ke MariaDB)
+// 5. CRUD: POST CREATE ITEM (Menambahkan data kamera baru ke MariaDB)
 app.post('/items', async (req, res) => {
-    const { title, author, year, category, description } = req.body;
+    const { brand, model, megapixel, price } = req.body;
     try {
         const [result] = await pool.query(
-            'INSERT INTO books (title, author, year, category, description) VALUES (?, ?, ?, ?, ?)',
-            [title, author, year, category, description]
+            'INSERT INTO cameras (brand, model, megapixel, price) VALUES (?, ?, ?, ?)',
+            [brand, model, megapixel, price]
         );
         res.status(201).json({
             status: "success",
             message: "Data created successfully",
-            data: { id: result.insertId, title, author, year, category, description }
+            data: { id: result.insertId, brand, model, megapixel, price }
         });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
     }
 });
 
-// 6. CRUD: PUT UPDATE ITEM (Mengubah data buku berdasarkan ID)
+// 6. CRUD: PUT UPDATE ITEM (Mengubah data kamera berdasarkan ID)
 app.put('/items/:id', async (req, res) => {
-    const { title, author, year, category, description } = req.body;
+    const { brand, model, megapixel, price } = req.body;
     const { id } = req.params;
     try {
         await pool.query(
-            'UPDATE books SET title = ?, author = ?, year = ?, category = ?, description = ? WHERE id = ?',
-            [title, author, year, category, description, id]
+            'UPDATE cameras SET brand = ?, model = ?, megapixel = ?, price = ? WHERE id = ?',
+            [brand, model, megapixel, price, id]
         );
         res.status(200).json({
             status: "success",
             message: "Data updated successfully",
-            data: { id: parseInt(id), title, author, year, category, description }
+            data: { id: parseInt(id), brand, model, megapixel, price }
         });
     } catch (error) {
         res.status(500).json({ status: "error", message: error.message });
     }
 });
 
-// 7. CRUD: DELETE ITEM (Menghapus data buku berdasarkan ID)
+// 7. CRUD: DELETE ITEM (Menghapus data kamera berdasarkan ID)
 app.delete('/items/:id', async (req, res) => {
     try {
-        await pool.query('DELETE FROM books WHERE id = ?', [req.params.id]);
+        await pool.query('DELETE FROM cameras WHERE id = ?', [req.params.id]);
         res.status(200).json({
             status: "success",
             message: "Data deleted successfully"
